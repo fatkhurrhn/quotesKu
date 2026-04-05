@@ -289,7 +289,7 @@ export default function QuotesList() {
             <i className="ri-search-2-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg"></i>
             <input
               type="text"
-              placeholder="Cari quote atau author..."
+              placeholder="Cari quote atau author...."
               className="w-full p-2 pl-10 pr-8 rounded-lg border border-gray-300 bg-white focus:outline-none focus:border-[#355485] focus:ring-1 focus:ring-[#355485] transition-all"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
