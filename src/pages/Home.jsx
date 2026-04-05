@@ -246,7 +246,7 @@ export default function QuotesList() {
   const handleShareText = async (q) => {
     setSharingTextId(q.id);
     try {
-      const shareText = `"${q.text}" — ${q.author}`;
+      const shareText = q.text;
 
       if (navigator.share) {
         await navigator.share({
