@@ -141,147 +141,6 @@ function wrapText(ctx, text, maxWidth) {
   return lines;
 }
 
-// Component Modal Share
-const ShareModal = ({ isOpen, onClose, quote, shareType, onShare }) => {
-  const [isProcessing, setIsProcessing] = useState(false);
-
-  if (!isOpen) return null;
-
-  const handleShareToFeed = async () => {
-    setIsProcessing(true);
-    await onShare('feed', quote);
-    setIsProcessing(false);
-    onClose();
-  };
-
-  const handleShareToStories = async () => {
-    setIsProcessing(true);
-    await onShare('stories', quote);
-    setIsProcessing(false);
-    onClose();
-  };
-
-  const handleDownload = async () => {
-    setIsProcessing(true);
-    await onShare('download', quote);
-    setIsProcessing(false);
-    onClose();
-  };
-
-  const handleCopyText = async () => {
-    setIsProcessing(true);
-    await onShare('copy', quote);
-    setIsProcessing(false);
-    onClose();
-  };
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 animate-fadeIn">
-      <div className="bg-white rounded-xl max-w-sm w-full p-6 shadow-xl transform animate-slideUp">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold text-gray-800">
-            Bagikan ke Instagram
-          </h3>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <i className="ri-close-line text-2xl"></i>
-          </button>
-        </div>
-
-        {shareType === 'image' ? (
-          <div className="space-y-3">
-            <p className="text-sm text-gray-600 mb-2">
-              Pilih cara membagikan quote ke Instagram:
-            </p>
-
-            <button
-              onClick={handleShareToFeed}
-              disabled={isProcessing}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isProcessing ? (
-                <i className="ri-loader-4-line animate-spin text-lg"></i>
-              ) : (
-                <i className="ri-instagram-line text-lg"></i>
-              )}
-              <span>Bagikan ke Feed</span>
-            </button>
-
-            <button
-              onClick={handleShareToStories}
-              disabled={isProcessing}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-purple-500 text-purple-600 rounded-lg hover:bg-purple-50 transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isProcessing ? (
-                <i className="ri-loader-4-line animate-spin text-lg"></i>
-              ) : (
-                <i className="ri-magic-line text-lg"></i>
-              )}
-              <span>Bagikan ke Stories</span>
-            </button>
-
-            <button
-              onClick={handleDownload}
-              disabled={isProcessing}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isProcessing ? (
-                <i className="ri-loader-4-line animate-spin text-lg"></i>
-              ) : (
-                <i className="ri-download-line text-lg"></i>
-              )}
-              <span>Download Gambar</span>
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            <p className="text-sm text-gray-600 mb-2">
-              Quote akan disalin ke clipboard, lalu Anda bisa paste di Instagram:
-            </p>
-
-            <button
-              onClick={handleCopyText}
-              disabled={isProcessing}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isProcessing ? (
-                <i className="ri-loader-4-line animate-spin text-lg"></i>
-              ) : (
-                <i className="ri-clipboard-line text-lg"></i>
-              )}
-              <span>Salin Teks</span>
-            </button>
-
-            <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-              <p className="text-xs text-gray-500 text-center">
-                💡 <strong>Tips:</strong> Setelah menyalin teks, buka Instagram dan paste di:
-                <br />
-                • Bio profil
-                <br />
-                • Caption postingan
-                <br />
-                • Komentar
-                <br />
-                • Stories (dengan fitur teks)
-              </p>
-            </div>
-          </div>
-        )}
-
-        <button
-          onClick={onClose}
-          className="w-full mt-4 px-4 py-2 text-gray-500 hover:text-gray-700 transition-colors text-sm"
-          disabled={isProcessing}
-        >
-          Batal
-        </button>
-      </div>
-    </div>
-  );
-};
-
 /* ---------- Main Component ---------- */
 export default function QuotesList() {
   const [quotes, setQuotes] = useState([]);
@@ -291,11 +150,6 @@ export default function QuotesList() {
 
   const [sharingImageId, setSharingImageId] = useState(null);
   const [sharingTextId, setSharingTextId] = useState(null);
-
-  // State untuk modal share
-  const [showShareModal, setShowShareModal] = useState(false);
-  const [selectedQuote, setSelectedQuote] = useState(null);
-  const [shareType, setShareType] = useState(null); // 'image' or 'text'
 
   // State untuk tracking status "tandai" per quote (true = selesai, false = tandai)
   const [markStatus, setMarkStatus] = useState({});
@@ -356,145 +210,61 @@ export default function QuotesList() {
     setFilteredQuotes(filtered);
   }, [searchTerm, quotes]);
 
-  // Fungsi untuk download gambar
-  const downloadImage = async (quote) => {
+  // share handler - IMAGE version
+  const handleShareImage = async (q) => {
+    setSharingImageId(q.id);
     try {
-      const dataUrl = await generateQuoteImage(quote.text, quote.author);
-      const link = document.createElement('a');
-      link.href = dataUrl;
-      link.download = `quote_${quote.author}_${Date.now()}.png`;
-      link.click();
-      alert("Gambar berhasil di-download!");
-    } catch (error) {
-      console.error("Error downloading image:", error);
-      alert("Gagal mendownload gambar");
-    }
-  };
+      const dataUrl = await generateQuoteImage(q.text, q.author);
 
-  // Fungsi untuk copy teks
-  const copyText = async (quote) => {
-    try {
-      const shareText = `"${quote.text}" — ${quote.author}`;
-      await navigator.clipboard.writeText(shareText);
-      alert("✓ Teks berhasil disalin! Sekarang buka Instagram dan paste teksnya.");
-    } catch (error) {
-      console.error("Error copying text:", error);
-      alert("Gagal menyalin teks");
-    }
-  };
-
-  // Fungsi untuk share ke Instagram Feed
-  const shareToInstagramFeed = async (quote) => {
-    try {
-      const dataUrl = await generateQuoteImage(quote.text, quote.author);
       const res = await fetch(dataUrl);
       const blob = await res.blob();
+      const file = new File([blob], "quote.png", { type: "image/png" });
 
-      // Cek apakah di mobile
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-      if (isMobile) {
-        // Buat object URL
-        const url = URL.createObjectURL(blob);
-
-        // Coba buka Instagram dengan intent
-        window.location.href = `instagram://media?id=0`;
-
-        // Fallback: download dan beri instruksi
-        setTimeout(() => {
-          const link = document.createElement('a');
-          link.href = dataUrl;
-          link.download = 'instagram_feed_quote.png';
-          link.click();
-          alert("Gambar sudah di-download!\n\nLangkah selanjutnya:\n1. Buka aplikasi Instagram\n2. Tap tombol + untuk buat postingan baru\n3. Pilih gambar yang sudah di-download\n4. Upload ke feed Anda");
-          URL.revokeObjectURL(url);
-        }, 1000);
+      if (navigator.share && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: "Quote",
+          text: `${q.text} — ${q.author}`,
+        });
       } else {
-        // Desktop: langsung download
-        const link = document.createElement('a');
+        const link = document.createElement("a");
         link.href = dataUrl;
-        link.download = 'instagram_feed_quote.png';
+        link.download = "quote.png";
         link.click();
-        alert("Gambar sudah di-download!\n\nTransfer gambar ke ponsel Anda, lalu upload ke Instagram Feed.");
       }
-    } catch (error) {
-      console.error("Error sharing to feed:", error);
-      alert("Gagal memproses gambar");
+    } catch (err) {
+      if (err.name !== "AbortError") {
+        console.error("Error sharing image:", err);
+        alert("Gagal membuat gambar, silakan coba lagi");
+      }
+    } finally {
+      setSharingImageId(null);
     }
   };
 
-  // Fungsi untuk share ke Instagram Stories
-  const shareToInstagramStories = async (quote) => {
+  // share handler - TEXT ONLY version
+  const handleShareText = async (q) => {
+    setSharingTextId(q.id);
     try {
-      const dataUrl = await generateQuoteImage(quote.text, quote.author);
-      const res = await fetch(dataUrl);
-      const blob = await res.blob();
+      const shareText = `"${q.text}" — ${q.author}`;
 
-      // Cek apakah di mobile
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-      if (isMobile) {
-        // Buat object URL
-        const url = URL.createObjectURL(blob);
-
-        // Intent untuk Instagram Stories (lebih spesifik)
-        window.location.href = `instagram://story?source_application=quote_app`;
-
-        // Fallback
-        setTimeout(() => {
-          const link = document.createElement('a');
-          link.href = dataUrl;
-          link.download = 'instagram_stories_quote.png';
-          link.click();
-          alert("Gambar sudah di-download!\n\nLangkah selanjutnya:\n1. Buka Instagram\n2. Swipe kanan atau tap foto profil untuk buka Stories\n3. Pilih gambar dari galeri\n4. Upload ke Stories Anda");
-          URL.revokeObjectURL(url);
-        }, 1000);
+      if (navigator.share) {
+        await navigator.share({
+          title: "Quote",
+          text: shareText,
+        });
       } else {
-        // Desktop: download
-        const link = document.createElement('a');
-        link.href = dataUrl;
-        link.download = 'instagram_stories_quote.png';
-        link.click();
-        alert("Gambar sudah di-download!\n\nTransfer gambar ke ponsel Anda, lalu upload ke Instagram Stories.");
+        await navigator.clipboard.writeText(shareText);
+        alert("Teks quote telah disalin ke clipboard!");
       }
-    } catch (error) {
-      console.error("Error sharing to stories:", error);
-      alert("Gagal memproses gambar");
+    } catch (err) {
+      if (err.name !== "AbortError") {
+        console.error("Error sharing text:", err);
+        alert("Gagal membagikan quote, silakan coba lagi");
+      }
+    } finally {
+      setSharingTextId(null);
     }
-  };
-
-  // Handler untuk share berdasarkan tipe
-  const handleShare = async (action, quote) => {
-    switch (action) {
-      case 'feed':
-        await shareToInstagramFeed(quote);
-        break;
-      case 'stories':
-        await shareToInstagramStories(quote);
-        break;
-      case 'download':
-        await downloadImage(quote);
-        break;
-      case 'copy':
-        await copyText(quote);
-        break;
-      default:
-        break;
-    }
-  };
-
-  // share handler - IMAGE version (buka modal)
-  const handleShareImage = (q) => {
-    setSelectedQuote(q);
-    setShareType('image');
-    setShowShareModal(true);
-  };
-
-  // share handler - TEXT ONLY version (buka modal)
-  const handleShareText = (q) => {
-    setSelectedQuote(q);
-    setShareType('text');
-    setShowShareModal(true);
   };
 
   const getDisplayMessage = () => {
@@ -507,26 +277,6 @@ export default function QuotesList() {
     }
     return `Total ${quotes.length} quotes tersedia`;
   };
-
-  // Tambahkan CSS untuk animasi
-  const styleSheet = document.createElement("style");
-  styleSheet.textContent = `
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    @keyframes slideUp {
-      from { transform: translateY(30px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-    .animate-fadeIn {
-      animation: fadeIn 0.3s ease-out;
-    }
-    .animate-slideUp {
-      animation: slideUp 0.3s ease-out;
-    }
-  `;
-  document.head.appendChild(styleSheet);
 
   return (
     <div className="bg-gray-50 min-h-screen text-gray-800">
@@ -558,7 +308,7 @@ export default function QuotesList() {
 
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-4 pt-[80px] pb-10">
-        <div className="px-1 mt-3 mb-4">
+        <div className="px-1 mt-1 mb-2">
           <div className="text-sm text-gray-500">{getDisplayMessage()}</div>
         </div>
 
@@ -586,7 +336,7 @@ export default function QuotesList() {
             ))}
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {filteredQuotes.length > 0 ? (
               filteredQuotes.map((q) => {
                 const isMarked = markStatus[q.id] || false;
@@ -596,7 +346,7 @@ export default function QuotesList() {
                     className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200"
                   >
                     {/* Header Card */}
-                    <div className="flex justify-between items-start mb-3">
+                    <div className="flex justify-between items-start mb-1">
                       <div>
                         <h3 className="text-base font-semibold text-gray-800">
                           {highlightText(q.author, searchTerm)}
@@ -608,12 +358,12 @@ export default function QuotesList() {
                     </div>
 
                     {/* Quote Text */}
-                    <p className="text-gray-700 text-[15px] leading-relaxed mb-4">
+                    <p className="text-gray-700 text-[15px] leading-relaxed mb-2">
                       {highlightText(q.text, searchTerm)}
                     </p>
 
                     {/* Action Buttons */}
-                    <div className="flex items-center gap-3 pt-2 border-t border-gray-100">
+                    <div className="flex items-center gap-3 pt-1 border-t border-gray-100">
                       {/* Share Image Button */}
                       <button
                         onClick={() => handleShareImage(q)}
@@ -666,19 +416,6 @@ export default function QuotesList() {
           </div>
         )}
       </div>
-
-      {/* Modal Share */}
-      <ShareModal
-        isOpen={showShareModal}
-        onClose={() => {
-          setShowShareModal(false);
-          setSelectedQuote(null);
-          setShareType(null);
-        }}
-        quote={selectedQuote}
-        shareType={shareType}
-        onShare={handleShare}
-      />
     </div>
   );
 }
