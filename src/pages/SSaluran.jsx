@@ -27,7 +27,7 @@ const shuffleArray = (array) => {
 };
 
 /* ---------- Main Component ---------- */
-export default function AllQuotes() {
+export default function Saluran() {
   const [quotes, setQuotes] = useState([]);
   const [filteredQuotes, setFilteredQuotes] = useState([]);
   const [loading, setLoading] = useState(true);

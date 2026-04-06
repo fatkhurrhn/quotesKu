@@ -4,10 +4,9 @@ import AutoToTop from './components/AutoToTop';
 import Home from './pages/Home';
 import AddQuotes from './pages/AddQuotes';
 import ManageQuotes from './pages/ManageQuotes';
-import Saluran from './pages/saluran';
-import Fatkhurrhn from './pages/fatkhurrhn';
-import Storythur from './pages/storythur';
-
+import Storythur from './pages/SStorythur';
+import Fatkhurrhn from './pages/FFatkhurrhn';
+import Saluran from './pages/SSaluran';
 
 function App() {
   return (
@@ -18,7 +17,7 @@ function App() {
         <Route path="/add" element={<AddQuotes />} />
         <Route path="/manage" element={<ManageQuotes />} />
         <Route path="/storythur" element={<Storythur />} />
-        <Route path="/saluran" element={<Saluran />} />
+        <Route path="/saluran" element={<salur />} />
         <Route path="/fatkhurrhn" element={<Fatkhurrhn />} />
       </Routes>
     </Router>
