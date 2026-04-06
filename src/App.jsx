@@ -4,9 +4,9 @@ import AutoToTop from './components/AutoToTop';
 import Home from './pages/Home';
 import AddQuotes from './pages/AddQuotes';
 import ManageQuotes from './pages/ManageQuotes';
-import Storythur from './pages/storythur';
 import Saluran from './pages/saluran';
 import Fatkhurrhn from './pages/fatkhurrhn';
+import Storythur from './pages/storythur';
 
 
 function App() {
