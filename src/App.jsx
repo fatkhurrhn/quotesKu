@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import AddQuotes from './pages/AddQuotes';
+import ManageQuotes from './pages/ManageQuotes';
 
 
 function App() {
@@ -10,6 +11,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/add" element={<AddQuotes />} />
+        <Route path="/manage" element={<ManageQuotes />} />
       </Routes>
     </Router>
   );
