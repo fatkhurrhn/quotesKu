@@ -139,26 +139,8 @@ const AddQuotes = () => {
         <div className="min-h-screen bg-gray-50 text-gray-800">
             <BottomNav/>
 
-            {/* 🔹 Header */}
-            <div
-                className={`fixed top-0 left-0 w-full z-50 bg-white border-b border-gray-200 transition-transform duration-300 ${showHeader ? "translate-y-0" : "-translate-y-full"
-                    }`}
-            >
-                <div className="max-w-xl mx-auto flex items-center justify-between px-3 py-3">
-                    <Link
-                        to="/"
-                        className="flex items-center font-semibold gap-2 text-[#355485] text-[15px]"
-                    >
-                        <i className="ri-arrow-left-line"></i> Tambah Quote
-                    </Link>
-                        <button className="text-[#355485]">
-                            <i className="ri-settings-5-line text-xl"></i>
-                        </button>
-                </div>
-            </div>
-
             {/* 🔹 Form */}
-            <div className="max-w-xl mx-auto px-3 border-x border-gray-200 pt-[70px] pb-10">
+            <div className="max-w-xl mx-auto px-3 border-x border-gray-200 pt-[20px] pb-10">
                 <form onSubmit={handleSubmit} className="space-y-3">
                     {/* Quote */}
                     <textarea

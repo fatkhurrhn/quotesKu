@@ -26,6 +26,39 @@ const shuffleArray = (array) => {
   return shuffled;
 };
 
+// Fungsi untuk menghitung waktu relatif
+const getRelativeTime = (timestamp) => {
+  if (!timestamp) return "";
+
+  let date;
+  if (timestamp?.toDate) {
+    date = timestamp.toDate();
+  } else if (timestamp?.seconds) {
+    date = new Date(timestamp.seconds * 1000);
+  } else {
+    date = new Date(timestamp);
+  }
+
+  const now = new Date();
+  const diffMs = now - date;
+  const diffSecs = Math.floor(diffMs / 1000);
+  const diffMins = Math.floor(diffSecs / 60);
+  const diffHours = Math.floor(diffMins / 60);
+  const diffDays = Math.floor(diffHours / 24);
+  const diffWeeks = Math.floor(diffDays / 7);
+  const diffMonths = Math.floor(diffDays / 30);
+  const diffYears = Math.floor(diffDays / 365);
+
+  if (diffYears > 0) return `${diffYears} tahun lalu`;
+  if (diffMonths > 0) return `${diffMonths} bulan lalu`;
+  if (diffWeeks > 0) return `${diffWeeks} minggu lalu`;
+  if (diffDays > 0) return `${diffDays} hari lalu`;
+  if (diffHours > 0) return `${diffHours} jam lalu`;
+  if (diffMins > 0) return `${diffMins} menit lalu`;
+  if (diffSecs > 10) return `${diffSecs} detik lalu`;
+  return "baru saja";
+};
+
 /* ---------- Main Component ---------- */
 export default function Saluran() {
   const [quotes, setQuotes] = useState([]);
@@ -33,13 +66,11 @@ export default function Saluran() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [sharingTextId, setSharingTextId] = useState(null);
-
-  // State untuk tracking status "tandai" per quote
   const [markStatus, setMarkStatus] = useState({});
 
-  // Load mark status dari localStorage saat mount
+  // Load mark status dari localStorage
   useEffect(() => {
-    const savedMarkStatus = localStorage.getItem("quoteMarkStatusAll");
+    const savedMarkStatus = localStorage.getItem("quoteMarkStatusSaluran");
     if (savedMarkStatus) {
       setMarkStatus(JSON.parse(savedMarkStatus));
     }
@@ -47,12 +78,9 @@ export default function Saluran() {
 
   // Save mark status ke localStorage
   const saveMarkStatus = (quoteId, status) => {
-    const newStatus = {
-      ...markStatus,
-      [quoteId]: status
-    };
+    const newStatus = { ...markStatus, [quoteId]: status };
     setMarkStatus(newStatus);
-    localStorage.setItem("quoteMarkStatusAll", JSON.stringify(newStatus));
+    localStorage.setItem("quoteMarkStatusSaluran", JSON.stringify(newStatus));
   };
 
   // Toggle mark status
@@ -128,55 +156,79 @@ export default function Saluran() {
     if (searchTerm) {
       return `Menampilkan ${filteredQuotes.length} dari ${quotes.length} quotes`;
     }
-    return `${quotes.length} quotes`;
+    return `${quotes.length} quotes tersedia`;
+  };
+
+  // Dapatkan icon berdasarkan author
+  const getAuthorIcon = (author) => {
+    if (author?.toLowerCase() === "storythur") return "📖";
+    if (author?.toLowerCase() === "fatkhurrhn") return "🎓";
+    return "💭";
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen text-gray-800">
+    <div className="min-h-screen bg-[#f9fafb] pb-16">
       <BottomNav />
 
-      {/* Header dengan Search Input */}
-      <div className="fixed top-0 left-0 w-full z-50 bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-2xl mx-auto px-4 py-3">
-          <div className="relative">
-            <i className="ri-search-2-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg"></i>
-            <input
-              type="text"
-              placeholder="Cari quotes..."
-              className="w-full p-2.5 pl-9 pr-8 rounded-lg border border-gray-300 bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-sm"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            {searchTerm && (
-              <button
-                onClick={() => setSearchTerm("")}
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              >
-                <i className="ri-close-line text-base"></i>
-              </button>
-            )}
+      {/* Header */}
+      <div className="bg-gradient-to-r from-[#355485] to-[#4f90c6] pt-10 pb-8 rounded-b-3xl shadow-md">
+        <div className="max-w-lg mx-auto px-5">
+          <div className="text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-white/10 backdrop-blur-sm rounded-2xl mb-3">
+              <span className="text-3xl">📡</span>
+            </div>
+            <h1 className="text-2xl font-bold text-white mb-1">Saluran</h1>
+            <p className="text-[#cbdde9] text-xs">Semua quotes dari berbagai penulis</p>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-2xl mx-auto px-4 pt-[72px] pb-20">
-        <div className="mb-3 px-1">
-          <p className="text-xs text-gray-500">{getDisplayMessage()}</p>
+      {/* Search Bar */}
+      <div className="max-w-lg mx-auto px-5 -mt-5 mb-4">
+        <div className="relative">
+          <i className="ri-search-line absolute left-4 top-1/2 transform -translate-y-1/2 text-[#9ca3af] text-lg"></i>
+          <input
+            type="text"
+            placeholder="Cari semua quotes..."
+            className="w-full p-3 pl-11 rounded-xl border border-[#e5e7eb] bg-white focus:outline-none focus:border-[#4f90c6] focus:ring-1 focus:ring-[#4f90c6] text-sm shadow-sm"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm("")}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#9ca3af] hover:text-gray-600"
+            >
+              <i className="ri-close-line text-lg"></i>
+            </button>
+          )}
         </div>
+      </div>
 
+      {/* Info Count */}
+      <div className="max-w-lg mx-auto px-5 mb-3">
+        <p className="text-xs text-[#6b7280]">{getDisplayMessage()}</p>
+      </div>
+
+      {/* Content */}
+      <div className="max-w-lg mx-auto px-5 pb-8">
         {loading ? (
           <div className="space-y-3">
             {[1, 2, 3, 4, 5].map((item) => (
-              <div key={item} className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 animate-pulse">
-                <div className="space-y-2 mb-3">
-                  <div className="h-4 bg-gray-200 rounded w-full"></div>
-                  <div className="h-4 bg-gray-200 rounded w-11/12"></div>
-                  <div className="h-4 bg-gray-200 rounded w-10/12"></div>
+              <div key={item} className="bg-white rounded-xl p-4 shadow-sm border border-[#e5e7eb] animate-pulse">
+                <div className="flex justify-between items-start mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 bg-gray-200 rounded-lg"></div>
+                    <div className="h-4 bg-gray-200 rounded w-24"></div>
+                  </div>
+                  <div className="h-3 bg-gray-200 rounded w-20"></div>
                 </div>
-                <div className="flex gap-2">
-                  <div className="h-8 bg-gray-200 rounded w-20"></div>
-                  <div className="h-8 bg-gray-200 rounded w-20"></div>
+                <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-11/12 mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-10/12"></div>
+                <div className="flex gap-2 mt-3">
+                  <div className="h-8 bg-gray-200 rounded-lg w-20"></div>
+                  <div className="h-8 bg-gray-200 rounded-lg w-20"></div>
                 </div>
               </div>
             ))}
@@ -186,23 +238,41 @@ export default function Saluran() {
             {filteredQuotes.length > 0 ? (
               filteredQuotes.map((q) => {
                 const isMarked = markStatus[q.id] || false;
+                const authorIcon = getAuthorIcon(q.author);
+                const authorColor = q.author?.toLowerCase() === "storythur"
+                  ? "text-[#355485]"
+                  : "text-[#4f90c6]";
+
                 return (
                   <div
                     key={q.id}
-                    className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 transition-all duration-200 hover:shadow-md"
+                    className="bg-white rounded-xl p-4 shadow-sm border border-[#e5e7eb] hover:shadow-md transition-all"
                   >
+                    {/* Header Card */}
+                    <div className="flex justify-between items-start mb-2 pb-2 border-b border-[#e5e7eb]">
+                      <div className="flex items-center gap-2">
+                        <span className="text-base">{authorIcon}</span>
+                        <h3 className={`text-sm font-semibold ${authorColor}`}>
+                          {q.author}
+                        </h3>
+                      </div>
+                      <span className="text-xs text-[#9ca3af]">
+                        {getRelativeTime(q.createdAt)}
+                      </span>
+                    </div>
+
                     {/* Quote Text */}
-                    <p className="text-gray-800 text-sm leading-relaxed mb-3">
+                    <p className="text-gray-700 text-sm leading-relaxed mb-3">
                       {highlightText(q.text, searchTerm)}
                     </p>
 
                     {/* Action Buttons */}
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 pt-1">
                       {/* Share Button */}
                       <button
                         onClick={() => handleShareText(q)}
                         disabled={sharingTextId === q.id}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition-all duration-200 text-xs font-medium"
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#cbdde9] text-[#355485] hover:bg-[#90b6d5] transition-all text-xs font-medium"
                       >
                         {sharingTextId === q.id ? (
                           <i className="ri-loader-4-line animate-spin text-sm"></i>
@@ -215,12 +285,12 @@ export default function Saluran() {
                       {/* Mark Button */}
                       <button
                         onClick={() => toggleMarkStatus(q.id)}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-all duration-200 text-xs font-medium ${isMarked
-                            ? "bg-green-50 text-green-600 hover:bg-green-100"
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all text-xs font-medium ${isMarked
+                            ? "bg-green-100 text-green-600"
                             : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                           }`}
                       >
-                        <i className={`${isMarked ? "ri-checkbox-circle-line" : "ri-circle-line"} text-sm`}></i>
+                        <i className={`${isMarked ? "ri-check-double-line" : "ri-check-line"} text-sm`}></i>
                         <span>{isMarked ? "Selesai" : "Tandai"}</span>
                       </button>
                     </div>
@@ -228,13 +298,13 @@ export default function Saluran() {
                 );
               })
             ) : (
-              <div className="text-center py-12 bg-white rounded-lg">
-                <i className="ri-inbox-line text-5xl text-gray-300 mb-3"></i>
-                <p className="text-gray-500 text-sm">Tidak ada quote yang ditemukan</p>
+              <div className="text-center py-12 bg-white rounded-xl border border-[#e5e7eb]">
+                <i className="ri-inbox-line text-5xl text-[#cbdde9] mb-3"></i>
+                <p className="text-[#6b7280] text-sm">Tidak ada quote yang ditemukan</p>
                 {searchTerm && (
                   <button
                     onClick={() => setSearchTerm("")}
-                    className="mt-3 text-blue-500 hover:text-blue-600 text-xs font-medium"
+                    className="mt-3 text-[#4f90c6] text-xs"
                   >
                     Hapus pencarian
                   </button>

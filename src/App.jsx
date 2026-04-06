@@ -7,6 +7,7 @@ import ManageQuotes from './pages/ManageQuotes';
 import Storythur from './pages/SStorythur';
 import Fatkhurrhn from './pages/FFatkhurrhn';
 import Saluran from './pages/SSaluran';
+import Search from './pages/Search';
 
 function App() {
   return (
@@ -17,8 +18,9 @@ function App() {
         <Route path="/add" element={<AddQuotes />} />
         <Route path="/manage" element={<ManageQuotes />} />
         <Route path="/storythur" element={<Storythur />} />
-        <Route path="/saluran" element={<salur />} />
+        <Route path="/saluran" element={<Saluran />} />
         <Route path="/fatkhurrhn" element={<Fatkhurrhn />} />
+        <Route path="/search" element={<Search />} />
       </Routes>
     </Router>
   );
