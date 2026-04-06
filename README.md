@@ -1,16 +1,28 @@
-# React + Vite
+# quotesKu
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+[![Live Demo](https://img.shields.io/badge/demo-online-green.svg)](http://quotes-ku.vercel.app/)
+[![React](https://img.shields.io/badge/React-18-blue.svg)](https://reactjs.org/)
+[![Firebase](https://img.shields.io/badge/Firebase-9-orange.svg)](https://firebase.google.com/)
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3-06B6D4.svg)](https://tailwindcss.com/)
 
-Currently, two official plugins are available:
+> A modern quotes application that allows users to read, search, share, and mark their favorite quotes.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ Key Features
 
-## React Compiler
+- 📖 **Read Quotes** - Display all approved quotes from various authors
+- 🔍 **Real-time Search** - Search quotes by text with automatic highlighting
+- 🔀 **Random Order** - Quotes appear in different order every time you refresh the page
+- 📱 **Share Text** - Share quotes to various platforms or copy to clipboard
+- ✅ **Mark Quotes** - Mark quotes as read/complete (saved to localStorage)
+- 📱 **Responsive Design** - Optimal display on both desktop and mobile
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🛠️ Tech Stack
 
-## Expanding the ESLint configuration
+- **Frontend**: React 18 + TailwindCSS
+- **Backend**: Firebase Firestore
+- **Icons**: Remix Icon
+- **Deployment**: Vercel
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🚀 Live Demo
+
+Visit the application at: [http://quotes-ku.vercel.app/](http://quotes-ku.vercel.app/)

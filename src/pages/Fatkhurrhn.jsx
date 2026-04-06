@@ -142,14 +142,12 @@ function wrapText(ctx, text, maxWidth) {
 }
 
 /* ---------- Main Component ---------- */
-export default function QuotesList() {
+export default function Fatkhurrhn() {
   const [quotes, setQuotes] = useState([]);
   const [filteredQuotes, setFilteredQuotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-
   const [sharingImageId, setSharingImageId] = useState(null);
-  const [sharingTextId, setSharingTextId] = useState(null);
 
   // State untuk tracking status "tandai" per quote (true = selesai, false = tandai)
   const [markStatus, setMarkStatus] = useState({});
@@ -186,8 +184,14 @@ export default function QuotesList() {
         const snapshot = await getDocs(q);
         const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
         const approved = data.filter((q) => q.status === "approved");
-        setQuotes(approved);
-        setFilteredQuotes(approved);
+
+        // Filter hanya yang author-nya "fatkhurrhn" (case insensitive)
+        const fatkhurrhnQuotes = approved.filter(
+          (quote) => quote.author?.toLowerCase() === "fatkhurrhn"
+        );
+
+        setQuotes(fatkhurrhnQuotes);
+        setFilteredQuotes(fatkhurrhnQuotes);
       } catch (err) {
         console.error("Error fetch quotes:", err);
       } finally {
@@ -210,7 +214,7 @@ export default function QuotesList() {
     setFilteredQuotes(filtered);
   }, [searchTerm, quotes]);
 
-  // share handler - IMAGE version
+  // share handler - IMAGE version only
   const handleShareImage = async (q) => {
     setSharingImageId(q.id);
     try {
@@ -242,31 +246,6 @@ export default function QuotesList() {
     }
   };
 
-  // share handler - TEXT ONLY version
-  const handleShareText = async (q) => {
-    setSharingTextId(q.id);
-    try {
-      const shareText = q.text;
-
-      if (navigator.share) {
-        await navigator.share({
-          title: "Quote",
-          text: shareText,
-        });
-      } else {
-        await navigator.clipboard.writeText(shareText);
-        alert("Teks quote telah disalin ke clipboard!");
-      }
-    } catch (err) {
-      if (err.name !== "AbortError") {
-        console.error("Error sharing text:", err);
-        alert("Gagal membagikan quote, silakan coba lagi");
-      }
-    } finally {
-      setSharingTextId(null);
-    }
-  };
-
   const getDisplayMessage = () => {
     if (loading) return "Memuat quotes...";
     if (searchTerm && filteredQuotes.length === 0) {
@@ -275,12 +254,12 @@ export default function QuotesList() {
     if (searchTerm) {
       return `Menampilkan ${filteredQuotes.length} dari ${quotes.length} quotes`;
     }
-    return `Total ${quotes.length} quotes tersedia`;
+    return `Total ${quotes.length} quotes dari Fatkhurrhn`;
   };
 
   return (
     <div className="bg-gray-50 min-h-screen text-gray-800">
-      <BottomNav/>
+      <BottomNav />
 
       {/* Header Fixed dengan Search Input */}
       <div className="fixed top-0 left-0 w-full z-50 bg-white border-b border-gray-200 shadow-sm">
@@ -289,7 +268,7 @@ export default function QuotesList() {
             <i className="ri-search-2-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg"></i>
             <input
               type="text"
-              placeholder="Cari quote atau author...."
+              placeholder="Cari quote dari Fatkhurrhn..."
               className="w-full p-2 pl-10 pr-8 rounded-lg border border-gray-300 bg-white focus:outline-none focus:border-[#355485] focus:ring-1 focus:ring-[#355485] transition-all"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -328,7 +307,6 @@ export default function QuotesList() {
                   <div className="h-4 bg-gray-200 rounded w-5/6"></div>
                 </div>
                 <div className="flex gap-3">
-                  <div className="h-8 bg-gray-200 rounded w-24"></div>
                   <div className="h-8 bg-gray-200 rounded w-24"></div>
                   <div className="h-8 bg-gray-200 rounded w-24"></div>
                 </div>
@@ -375,24 +353,10 @@ export default function QuotesList() {
                         ) : (
                           <i className="ri-image-line text-base"></i>
                         )}
-                        <span>Gambar</span>
+                        <span>Bagikan Gambar</span>
                       </button>
 
-                      {/* Share Text Only Button */}
-                      <button
-                        onClick={() => handleShareText(q)}
-                        disabled={sharingTextId === q.id}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200 text-sm"
-                      >
-                        {sharingTextId === q.id ? (
-                          <i className="ri-loader-4-line animate-spin text-base"></i>
-                        ) : (
-                          <i className="ri-file-text-line text-base"></i>
-                        )}
-                        <span>Teks</span>
-                      </button>
-
-                      {/* Mark Button - Simple toggle between Tandai and Selesai */}
+                      {/* Mark Button */}
                       <button
                         onClick={() => toggleMarkStatus(q.id)}
                         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all duration-200 text-sm ${isMarked
@@ -410,7 +374,7 @@ export default function QuotesList() {
             ) : (
               <div className="text-center py-12">
                 <i className="ri-inbox-line text-6xl text-gray-300 mb-3"></i>
-                <p className="text-gray-500">Tidak ada quote yang ditemukan</p>
+                <p className="text-gray-500">Tidak ada quote dari Fatkhurrhn</p>
               </div>
             )}
           </div>

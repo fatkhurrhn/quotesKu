@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { myQuotesCollection } from "../firebase";
 import { addDoc, serverTimestamp } from "firebase/firestore";
 import { Link } from "react-router-dom";
+import BottomNav from "../components/BottomNav";
 
 const AddQuotes = () => {
     const [quote, setQuote] = useState("");
@@ -136,7 +137,7 @@ const AddQuotes = () => {
 
     return (
         <div className="min-h-screen bg-gray-50 text-gray-800">
-            
+            <BottomNav/>
 
             {/* 🔹 Header */}
             <div
