@@ -278,7 +278,7 @@ const AddQuotes = () => {
                                 <i className="ri-information-line text-blue-500 text-sm mt-0.5"></i>
                                 <p className="text-xs text-blue-700">
                                     Quote akan masuk ke antrian persetujuan admin terlebih dahulu.
-                                    Setelah disetujui, quote akan tampil di halaman utama.
+                                    Setelah disetujui, quote akan tampil di halaman QuotesKu.
                                 </p>
                             </div>
                         </div>
