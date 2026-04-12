@@ -57,7 +57,7 @@ export default function Home() {
       <BottomNav />
 
       {/* Hero Section */}
-      <div className="relative bg-gradient-to-br from-[#1e3a5f] via-[#2a436c] to-[#355485] pt-12 pb-20 rounded-b-3xl overflow-hidden">
+      <div className="relative bg-gradient-to-br from-[#1e3a5f] via-[#2a436c] to-[#355485] pt-12 pb-[60px] rounded-b-3xl overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 left-0 w-64 h-64 bg-white rounded-full -translate-x-1/2 -translate-y-1/2"></div>
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full translate-x-1/2 translate-y-1/2"></div>
@@ -91,8 +91,8 @@ export default function Home() {
             </div>
           </form>
 
-          <div className="flex flex-wrap justify-center gap-2 mt-6">
-            {["inspirasi", "cinta", "sukses", "motivasi", "kuliah"].map((tag) => (
+          <div className="flex flex-wrap justify-center gap-2 mt-3">
+            {["pacaran", "cinta", "sukses",  "kuliah"].map((tag) => (
               <button
                 key={tag}
                 onClick={() => setSearchQuery(tag)}
@@ -106,7 +106,7 @@ export default function Home() {
       </div>
 
       {/* Stats Row - OVERLAPPING with higher z-index */}
-      <div className="relative max-w-lg mx-auto px-5 -mt-8 z-20">
+      <div className="relative max-w-lg mx-auto px-5 -mt-10 z-20">
         <div className="grid grid-cols-4 gap-3 bg-white rounded-2xl p-4 shadow-xl border border-[#e5e7eb]">
           <div className="text-center">
             <div className="text-2xl font-bold bg-gradient-to-r from-[#355485] to-[#4f90c6] bg-clip-text text-transparent">
@@ -220,13 +220,13 @@ export default function Home() {
                 <i className="ri-code-line text-[#355485] text-sm"></i>
                 <span className="text-xs text-gray-600">Developer: <span className="font-semibold text-[#355485]">Fatkhurrhn</span></span>
               </div>
-              <button
-                onClick={handleContact}
+              <Link to="https://instagram.com/fatkhurrhn"
+                // onClick={handleContact}
                 className="flex items-center gap-1.5 bg-[#355485] hover:bg-[#2a436c] text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
               >
                 <i className="ri-instagram-line text-sm"></i>
                 <span>DM Saran</span>
-              </button>
+              </Link>
             </div>
             <p className="text-[10px] text-[#6b7280] mt-2">
               Ada saran atau masukan? Klik tombol di atas untuk langsung DM ke Instagram developer
