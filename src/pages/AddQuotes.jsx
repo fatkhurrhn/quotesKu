@@ -155,7 +155,7 @@ const AddQuotes = () => {
 
                     {/* Author with Radio Buttons */}
                     <div className="space-y-2">
-                        <div className="flex gap-4 mb-2">
+                        {/* <div className="flex gap-4 mb-2">
                             <label className="flex items-center space-x-2 cursor-pointer">
                                 <input
                                     type="radio"
@@ -178,10 +178,10 @@ const AddQuotes = () => {
                                 />
                                 <span className="text-sm text-gray-700">fatkhurrhn</span>
                             </label>
-                        </div>
+                        </div> */}
 
                         <input
-                            placeholder="Tanpa '@' atau tulis manual"
+                            placeholder="Nama instagramMu tanpa '@'"
                             type="text"
                             id="author"
                             className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-800 focus:ring-2 focus:ring-[#4f90c6] focus:border-[#4f90c6] transition"
