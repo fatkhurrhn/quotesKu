@@ -60,7 +60,7 @@ const getRelativeTime = (timestamp) => {
 };
 
 /* ---------- Main Component ---------- */
-export default function Saluran() {
+export default function QuotesKu() {
   const [quotes, setQuotes] = useState([]);
   const [filteredQuotes, setFilteredQuotes] = useState([]);
   const [loading, setLoading] = useState(true);

@@ -3,11 +3,15 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import AutoToTop from './components/AutoToTop';
 import Home from './pages/Home';
 import AddQuotes from './pages/AddQuotes';
-import ManageQuotes from './pages/ManageQuotes';
-import Storythur from './pages/SStorythur';
-import Fatkhurrhn from './pages/FFatkhurrhn';
+import ManageQuotes2 from './pages/ManageQuotes2';
 import Saluran from './pages/SSaluran';
 import Search from './pages/Search';
+import QuotesVid from './pages/QuotesVid';
+import ManageQuotes from './pages/ManageQuotes';
+import GenerateQuotes from './pages/GenerateQuotes';
+import BahanReels from './pages/BahanReels';
+import InstagramKu from './pages/InstagramKu';
+import QuotesKu from './pages/QuotesKu';
 
 function App() {
   return (
@@ -16,11 +20,17 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/add" element={<AddQuotes />} />
-        <Route path="/manage" element={<ManageQuotes />} />
-        <Route path="/storythur" element={<Storythur />} />
+        <Route path="/manage" element={<ManageQuotes2 />} />
+        <Route path="/quotesku" element={<QuotesKu />} />
         <Route path="/saluran" element={<Saluran />} />
-        <Route path="/fatkhurrhn" element={<Fatkhurrhn />} />
+        <Route path="/instagramku" element={<InstagramKu />} />
         <Route path="/search" element={<Search />} />
+        <Route path="/bahan-reels" element={<BahanReels />} />
+
+        
+        <Route path="/quotes-vid" element={<QuotesVid />} />
+        <Route path="/manage-quotes" element={<ManageQuotes />} />
+        <Route path="/generate/:id" element={<GenerateQuotes />} />
       </Routes>
     </Router>
   );

@@ -6,9 +6,9 @@ const BottomNav = () => {
 
   const navItems = [
     { path: "/", icon: "ri-home-4-line", activeIcon: "ri-home-4-fill", label: "Home" },
-    { path: "/storythur", icon: "ri-instagram-line", activeIcon: "ri-instagram-fill", label: "Storythur" },
+    { path: "/quotesku", icon: "ri-chat-quote-line", activeIcon: "ri-chat-quote-fill", label: "QuotesKu" },
     { path: "/add", icon: "ri-add-line", activeIcon: "ri-add-line", label: "Tambah", isCenter: true },
-    { path: "/fatkhurrhn", icon: "ri-instagram-line", activeIcon: "ri-instagram-fill", label: "Fatkhurrhn" },
+    { path: "/instagramku", icon: "ri-instagram-line", activeIcon: "ri-instagram-fill", label: "InstagramKu" },
     { path: "/saluran", icon: "ri-broadcast-line", activeIcon: "ri-broadcast-fill", label: "Saluran" },
   ];
 

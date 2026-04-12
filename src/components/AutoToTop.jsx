@@ -1,11 +1,12 @@
-import { useEffect } from 'react';
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
-const AutoToTop = ({ activePage }) => {
+export default function AutoToTop() {
+  const { pathname } = useLocation();
+
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [activePage]); // Scroll ke atas setiap kali activePage berubah
+  }, [pathname]);
 
   return null;
-};
-
-export default AutoToTop;
+}

@@ -16,37 +16,14 @@ const highlightText = (text, highlight) => {
   );
 };
 
-// Fungsi untuk menghitung waktu relatif dalam BAHASA INDONESIA
-const getRelativeTime = (timestamp) => {
-  if (!timestamp) return "";
-
-  let date;
-  if (timestamp?.toDate) {
-    date = timestamp.toDate();
-  } else if (timestamp?.seconds) {
-    date = new Date(timestamp.seconds * 1000);
-  } else {
-    date = new Date(timestamp);
+// Fungsi untuk mengacak array (Fisher-Yates shuffle)
+const shuffleArray = (array) => {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
-
-  const now = new Date();
-  const diffMs = now - date;
-  const diffSecs = Math.floor(diffMs / 1000);
-  const diffMins = Math.floor(diffSecs / 60);
-  const diffHours = Math.floor(diffMins / 60);
-  const diffDays = Math.floor(diffHours / 24);
-  const diffWeeks = Math.floor(diffDays / 7);
-  const diffMonths = Math.floor(diffDays / 30);
-  const diffYears = Math.floor(diffDays / 365);
-
-  if (diffYears > 0) return `${diffYears} tahun lalu`;
-  if (diffMonths > 0) return `${diffMonths} bulan lalu`;
-  if (diffWeeks > 0) return `${diffWeeks} minggu lalu`;
-  if (diffDays > 0) return `${diffDays} hari lalu`;
-  if (diffHours > 0) return `${diffHours} jam lalu`;
-  if (diffMins > 0) return `${diffMins} menit lalu`;
-  if (diffSecs > 10) return `${diffSecs} detik lalu`;
-  return "baru saja";
+  return shuffled;
 };
 
 const generateQuoteImage = async (quote, author) => {
@@ -135,16 +112,17 @@ function wrapText(ctx, text, maxWidth) {
 }
 
 /* ---------- Main Component ---------- */
-export default function Fatkhurrhn() {
+export default function InstagramKu() {
   const [quotes, setQuotes] = useState([]);
   const [filteredQuotes, setFilteredQuotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [sharingImageId, setSharingImageId] = useState(null);
   const [markStatus, setMarkStatus] = useState({});
+  const [copiedId, setCopiedId] = useState(null); // State untuk tracking quote yang di-copy
 
   useEffect(() => {
-    const savedMarkStatus = localStorage.getItem("quoteMarkStatusFatkhurrhn");
+    const savedMarkStatus = localStorage.getItem("quoteMarkStatus");
     if (savedMarkStatus) {
       setMarkStatus(JSON.parse(savedMarkStatus));
     }
@@ -153,12 +131,31 @@ export default function Fatkhurrhn() {
   const saveMarkStatus = (quoteId, status) => {
     const newStatus = { ...markStatus, [quoteId]: status };
     setMarkStatus(newStatus);
-    localStorage.setItem("quoteMarkStatusFatkhurrhn", JSON.stringify(newStatus));
+    localStorage.setItem("quoteMarkStatus", JSON.stringify(newStatus));
   };
 
   const toggleMarkStatus = (quoteId) => {
     const currentStatus = markStatus[quoteId] || false;
     saveMarkStatus(quoteId, !currentStatus);
+  };
+
+  // Fungsi untuk copy teks quote
+  const handleCopyQuote = async (quote, author, quoteId) => {
+    try {
+      const copyText = `"${quote}"\n-${author}`;
+      await navigator.clipboard.writeText(copyText);
+
+      // Set ID yang sedang di-copy
+      setCopiedId(quoteId);
+
+      // Reset setelah 2 detik
+      setTimeout(() => {
+        setCopiedId(null);
+      }, 2000);
+    } catch (err) {
+      console.error("Gagal copy teks:", err);
+      alert("Gagal menyalin quote");
+    }
   };
 
   useEffect(() => {
@@ -169,12 +166,18 @@ export default function Fatkhurrhn() {
         const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
         const approved = data.filter((q) => q.status === "approved");
 
-        const fatkhurrhnQuotes = approved.filter(
-          (quote) => quote.author?.toLowerCase() === "fatkhurrhn"
+        // Ambil quotes dari fatkhurrhn dan storythur
+        const targetQuotes = approved.filter(
+          (quote) =>
+            quote.author?.toLowerCase() === "fatkhurrhn" ||
+            quote.author?.toLowerCase() === "storythur"
         );
 
-        setQuotes(fatkhurrhnQuotes);
-        setFilteredQuotes(fatkhurrhnQuotes);
+        // Acak urutan quotes
+        const shuffledQuotes = shuffleArray(targetQuotes);
+
+        setQuotes(shuffledQuotes);
+        setFilteredQuotes(shuffledQuotes);
       } catch (err) {
         console.error("Error fetch quotes:", err);
       } finally {
@@ -227,7 +230,7 @@ export default function Fatkhurrhn() {
     if (loading) return "Memuat quotes...";
     if (searchTerm && filteredQuotes.length === 0) return "Tidak ada quote yang ditemukan";
     if (searchTerm) return `Menampilkan ${filteredQuotes.length} dari ${quotes.length} quotes`;
-    return `${quotes.length} quotes dari Fatkhurrhn`;
+    return `${quotes.length} quotes dari Fatkhurrhn & Storythur`;
   };
 
   return (
@@ -238,11 +241,8 @@ export default function Fatkhurrhn() {
       <div className="bg-gradient-to-r from-[#2a436c] to-[#355485] pt-10 pb-8 rounded-b-3xl shadow-md">
         <div className="max-w-lg mx-auto px-5">
           <div className="text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-white/10 backdrop-blur-sm rounded-2xl mb-3">
-              <span className="text-3xl">🎓</span>
-            </div>
-            <h1 className="text-2xl font-bold text-white mb-1">Fatkhurrhn</h1>
-            <p className="text-[#cbdde9] text-xs">Kumpulan quotes khusus dunia perkuliahan</p>
+            <h1 className="text-2xl font-bold text-white mb-1">Kata Hari Ini</h1>
+            <p className="text-[#cbdde9] text-xs">Kumpulan quotes dari Fatkhurrhn & Storythur</p>
           </div>
         </div>
       </div>
@@ -253,7 +253,7 @@ export default function Fatkhurrhn() {
           <i className="ri-search-line absolute left-4 top-1/2 transform -translate-y-1/2 text-[#9ca3af] text-lg"></i>
           <input
             type="text"
-            placeholder="Cari quotes tentang perkuliahan..."
+            placeholder="Cari quotes..."
             className="w-full p-3 pl-11 rounded-xl border border-[#e5e7eb] bg-white focus:outline-none focus:border-[#4f90c6] focus:ring-1 focus:ring-[#4f90c6] text-sm shadow-sm"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -299,6 +299,8 @@ export default function Fatkhurrhn() {
             {filteredQuotes.length > 0 ? (
               filteredQuotes.map((q) => {
                 const isMarked = markStatus[q.id] || false;
+                const isCopied = copiedId === q.id;
+
                 return (
                   <div
                     key={q.id}
@@ -308,15 +310,23 @@ export default function Fatkhurrhn() {
                     <div className="flex justify-between items-start mb-2 pb-2 border-b border-[#e5e7eb]">
                       <div className="flex items-center gap-2">
                         <div className="w-6 h-6 bg-[#cbdde9] rounded-lg flex items-center justify-center">
-                          <i className="ri-graduation-cap-line text-[#355485] text-xs"></i>
+                          {q.author?.toLowerCase() === "fatkhurrhn" ? (
+                            <i className="ri-graduation-cap-line text-[#355485] text-xs"></i>
+                          ) : (
+                            <i className="ri-book-open-line text-[#355485] text-xs"></i>
+                          )}
                         </div>
                         <h3 className="text-sm font-semibold text-[#355485]">
                           {q.author}
                         </h3>
                       </div>
-                      <span className="text-xs text-[#9ca3af]">
-                        {getRelativeTime(q.createdAt)}
-                      </span>
+                      {/* Copy Button with clipboard icon */}
+                      <button
+                        onClick={() => handleCopyQuote(q.text, q.author, q.id)}
+                        className="transition-all duration-200 hover:scale-110"
+                      >
+                        <i className={`${isCopied ? "ri-clipboard-fill" : "ri-clipboard-line"} text-[#9ca3af] text-lg hover:text-[#355485]`}></i>
+                      </button>
                     </div>
 
                     {/* Quote Text */}
@@ -344,8 +354,8 @@ export default function Fatkhurrhn() {
                       <button
                         onClick={() => toggleMarkStatus(q.id)}
                         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all text-xs font-medium ${isMarked
-                            ? "bg-green-100 text-green-600"
-                            : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                          ? "bg-green-100 text-green-600"
+                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                           }`}
                       >
                         <i className={`${isMarked ? "ri-check-double-line" : "ri-check-line"} text-sm`}></i>
@@ -358,7 +368,7 @@ export default function Fatkhurrhn() {
             ) : (
               <div className="text-center py-12 bg-white rounded-xl border border-[#e5e7eb]">
                 <i className="ri-inbox-line text-5xl text-[#cbdde9] mb-3"></i>
-                <p className="text-[#6b7280] text-sm">Tidak ada quote dari Fatkhurrhn</p>
+                <p className="text-[#6b7280] text-sm">Tidak ada quote yang tersedia</p>
                 {searchTerm && (
                   <button
                     onClick={() => setSearchTerm("")}

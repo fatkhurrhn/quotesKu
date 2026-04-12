@@ -20,10 +20,6 @@ export default function Home() {
       {/* Hero Section - Simple & Elegant */}
       <div className="bg-gradient-to-br from-[#355485] to-[#2a436c] pt-12 pb-16 rounded-b-3xl">
         <div className="max-w-lg mx-auto px-5 text-center">
-          {/* Logo */}
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-white/10 backdrop-blur-sm rounded-2xl mb-5">
-            <span className="text-5xl">💭</span>
-          </div>
 
           <h1 className="text-3xl font-bold text-white mb-2">quotesKu</h1>
           <p className="text-[#cbdde9] text-sm mb-8">Temukan inspirasi dalam setiap kata</p>
@@ -184,20 +180,6 @@ export default function Home() {
             <div className="text-[#cbdde9] text-xs">— Storythur</div>
           </div>
         </div>
-      </div>
-
-      {/* CTA */}
-      <div className="max-w-lg mx-auto px-5 mb-10">
-        <Link to="/quotes">
-          <div className="bg-white rounded-xl p-5 text-center border border-[#e5e7eb] shadow-sm">
-            <div className="w-12 h-12 bg-[#cbdde9] rounded-xl flex items-center justify-center mx-auto mb-3">
-              <i className="ri-book-open-line text-[#355485] text-xl"></i>
-            </div>
-            <h3 className="font-semibold text-[#355485] text-sm mb-1">Lihat Semua Quotes</h3>
-            <p className="text-[#6b7280] text-[10px] mb-3">Jelajahi semua quotes dari berbagai penulis</p>
-            <span className="inline-block text-[#4f90c6] text-xs font-medium">Mulai Membaca →</span>
-          </div>
-        </Link>
       </div>
 
       {/* Footer */}
