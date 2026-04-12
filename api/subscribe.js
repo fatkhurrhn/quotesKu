@@ -1,54 +1,34 @@
 import { Resend } from 'resend';
-import admin from 'firebase-admin';
 
-// Inisialisasi Firebase Admin dengan cara yang lebih aman
-if (!admin.apps.length) {
-  try {
-    // Coba parse dari environment variable
-    const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
-    });
-    console.log('Firebase Admin initialized successfully');
-  } catch (error) {
-    console.error('Error initializing Firebase Admin:', error.message);
-    // Fallback untuk development (opsional)
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Running in development mode without Firebase');
-    }
-  }
-}
-
+// Inisialisasi Resend dengan pengecekan
 const resend = new Resend(process.env.RESEND_API_KEY);
-const db = admin.apps.length ? admin.firestore() : null;
 
 export default async function handler(req, res) {
-  // CORS headers
+  // CORS headers (sama seperti di atas)
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
   res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
 
   if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
+    return res.status(200).end();
   }
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { email } = req.body;
-
-  if (!email || !email.includes('@')) {
-    return res.status(400).json({ error: 'Email tidak valid' });
-  }
-
   try {
-    // Untuk testing, skip dulu simpan ke Firestore
-    // Kirim email aja tanpa simpan ke database
-    console.log(`Mengirim email ke: ${email}`);
+    const { email } = req.body;
+    
+    if (!email || !email.includes('@')) {
+      return res.status(400).json({ error: 'Email tidak valid' });
+    }
 
+    console.log('Sending email to:', email);
+    console.log('RESEND_API_KEY exists:', !!process.env.RESEND_API_KEY);
+
+    // Kirim email
     const { data, error } = await resend.emails.send({
       from: 'quotesKu <onboarding@resend.dev>',
       to: email,
@@ -86,10 +66,10 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: error.message });
     }
 
-    console.log('Email terkirim:', data);
+    console.log('Email sent:', data);
     return res.status(200).json({ 
       success: true, 
-      message: 'Subscribe berhasil! Cek email kamu untuk konfirmasi.' 
+      message: 'Subscribe berhasil! Cek email kamu.' 
     });
   } catch (error) {
     console.error('Error:', error.message);
