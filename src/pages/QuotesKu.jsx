@@ -49,9 +49,13 @@ const getRelativeTime = (timestamp) => {
   return "baru saja";
 };
 
+// Author yang di-hide dari tampilan default
+const HIDDEN_AUTHORS = ["storythur", "fatkhurrhn", "nrltfh_22"];
+
 /* ---------- Main Component ---------- */
 export default function QuotesKu() {
-  const [quotes, setQuotes] = useState([]);
+  const [allQuotes, setAllQuotes] = useState([]);
+  const [displayQuotes, setDisplayQuotes] = useState([]);
   const [filteredQuotes, setFilteredQuotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -128,7 +132,6 @@ export default function QuotesKu() {
           text: shareText,
         });
       } else {
-        // Fallback: copy ke clipboard jika tidak support native share
         await navigator.clipboard.writeText(shareText);
         alert("Share tidak support di browser ini, teks sudah disalin ke clipboard!");
       }
@@ -142,16 +145,14 @@ export default function QuotesKu() {
     }
   };
 
-  // Copy text handler untuk icon copy (bookmark diganti jadi copy)
+  // Copy text handler
   const handleCopyText = async (q) => {
     try {
       const copyText = `"${q.text}"\n-${q.author}`;
       await navigator.clipboard.writeText(copyText);
-      
-      // Show notification
+
       setCopyNotificationId(q.id);
-      
-      // Hide notification after 2 seconds
+
       setTimeout(() => {
         setCopyNotificationId(null);
       }, 2000);
@@ -165,16 +166,65 @@ export default function QuotesKu() {
   const filterByAuthor = (author) => {
     if (selectedAuthor === author) {
       setSelectedAuthor(null);
-      setFilteredQuotes(quotes);
+      // Reset ke display quotes default (tanpa hidden authors)
+      const defaultQuotes = allQuotes.filter(
+        (quote) => !HIDDEN_AUTHORS.includes(quote.author?.toLowerCase())
+      );
+      setDisplayQuotes(defaultQuotes);
+      // Reset search term juga
+      setSearchTerm("");
+      setFilteredQuotes(defaultQuotes);
     } else {
       setSelectedAuthor(author);
-      const filtered = quotes.filter(q => q.author === author);
+      // Filter quotes dari author yang dipilih (dari allQuotes)
+      const filtered = allQuotes.filter(q => q.author === author);
+      setDisplayQuotes(filtered);
+      // Reset search term
+      setSearchTerm("");
       setFilteredQuotes(filtered);
     }
-    setSearchTerm("");
   };
 
-  // fetch quotes - exclude storythur dan fatkhurrhn
+  // Search handler - SEARCH INDEPENDENT, mencari di SEMUA quotes (allQuotes)
+  const handleSearch = (keyword) => {
+    if (keyword.trim()) {
+      // Search dari ALL QUOTES (termasuk hidden authors)
+      const searchResults = allQuotes.filter(
+        (q) => q.text.toLowerCase().includes(keyword.toLowerCase())
+      );
+      setFilteredQuotes(searchResults);
+      // Clear selected author karena search independen
+      setSelectedAuthor(null);
+    } else {
+      // Jika search kosong, kembali ke tampilan default (tanpa hidden authors)
+      const defaultQuotes = allQuotes.filter(
+        (quote) => !HIDDEN_AUTHORS.includes(quote.author?.toLowerCase())
+      );
+      setFilteredQuotes(defaultQuotes);
+      setDisplayQuotes(defaultQuotes);
+    }
+  };
+
+  // Handle search input change
+  const onSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    handleSearch(value);
+  };
+
+  // Clear search
+  const clearSearch = () => {
+    setSearchTerm("");
+    // Reset ke tampilan default
+    const defaultQuotes = allQuotes.filter(
+      (quote) => !HIDDEN_AUTHORS.includes(quote.author?.toLowerCase())
+    );
+    setFilteredQuotes(defaultQuotes);
+    setDisplayQuotes(defaultQuotes);
+    setSelectedAuthor(null);
+  };
+
+  // fetch quotes
   useEffect(() => {
     const fetchQuotes = async () => {
       try {
@@ -187,16 +237,17 @@ export default function QuotesKu() {
         }));
         const approved = data.filter((quote) => quote.status === "approved");
 
-        // Filter: exclude storythur dan fatkhurrhn
-        const filteredApproved = approved.filter(
-          (quote) =>
-            quote.author?.toLowerCase() !== "storythur" &&
-            quote.author?.toLowerCase() !== "fatkhurrhn"
+        // Simpan semua quotes yang approved
+        setAllQuotes(approved);
+
+        // Filter untuk tampilan default (exclude hidden authors)
+        const defaultQuotes = approved.filter(
+          (quote) => !HIDDEN_AUTHORS.includes(quote.author?.toLowerCase())
         );
 
         // Set initial states untuk likes
         const initialStates = {};
-        filteredApproved.forEach(quote => {
+        approved.forEach(quote => {
           initialStates[quote.id] = {
             isLiked: false,
             isLiking: false,
@@ -205,12 +256,12 @@ export default function QuotesKu() {
         });
         setQuoteStates(initialStates);
 
-        // Extract unique authors (kecuali storythur & fatkhurrhn)
-        const uniqueAuthors = [...new Set(filteredApproved.map(q => q.author))];
+        // Extract unique authors dari SEMUA quotes
+        const uniqueAuthors = [...new Set(approved.map(q => q.author).filter(a => a))];
         setAuthors(uniqueAuthors);
 
-        setQuotes(filteredApproved);
-        setFilteredQuotes(filteredApproved);
+        setDisplayQuotes(defaultQuotes);
+        setFilteredQuotes(defaultQuotes);
       } catch (err) {
         console.error("Error fetch quotes:", err);
       } finally {
@@ -220,32 +271,18 @@ export default function QuotesKu() {
     fetchQuotes();
   }, []);
 
-  // filter search
-  useEffect(() => {
-    let filtered = [...quotes];
-    if (searchTerm.trim()) {
-      filtered = filtered.filter(
-        (q) => q.text.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-    if (selectedAuthor) {
-      filtered = filtered.filter(q => q.author === selectedAuthor);
-    }
-    setFilteredQuotes(filtered);
-  }, [searchTerm, quotes, selectedAuthor]);
-
   const getDisplayMessage = () => {
     if (loading) return "Memuat quotes...";
     if (searchTerm && filteredQuotes.length === 0) {
-      return "Tidak ada quote yang ditemukan";
+      return `Tidak ada quote yang mengandung kata "${searchTerm}"`;
+    }
+    if (searchTerm) {
+      return `Menampilkan ${filteredQuotes.length} hasil untuk "${searchTerm}"`;
     }
     if (selectedAuthor) {
       return `Menampilkan quotes dari ${selectedAuthor}`;
     }
-    if (searchTerm) {
-      return `Menampilkan ${filteredQuotes.length} dari ${quotes.length} quotes`;
-    }
-    return `${quotes.length} quotes tersedia`;
+    return `${displayQuotes.length} quotes dari berbagai penulis`;
   };
 
   return (
@@ -271,11 +308,11 @@ export default function QuotesKu() {
             placeholder="Cari quotes..."
             className="w-full p-3 pl-11 rounded-xl border border-[#e5e7eb] bg-white focus:outline-none focus:border-[#4f90c6] focus:ring-1 focus:ring-[#4f90c6] text-sm shadow-sm"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={onSearchChange}
           />
           {searchTerm && (
             <button
-              onClick={() => setSearchTerm("")}
+              onClick={clearSearch}
               className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#9ca3af] hover:text-gray-600"
             >
               <i className="ri-close-line text-lg"></i>
@@ -284,35 +321,41 @@ export default function QuotesKu() {
         </div>
       </div>
 
-      {/* Authors Filter */}
-      <div className="max-w-lg mx-auto px-5 mt-3 mb-1">
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-          <button
-            onClick={() => {
-              setSelectedAuthor(null);
-              setSearchTerm("");
-            }}
-            className={`px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${!selectedAuthor
+      {/* Authors Filter - Hanya muncul jika tidak sedang search */}
+      {!searchTerm && (
+        <div className="max-w-lg mx-auto px-5 mt-3 mb-1">
+          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            <button
+              onClick={() => {
+                setSelectedAuthor(null);
+                const defaultQuotes = allQuotes.filter(
+                  (quote) => !HIDDEN_AUTHORS.includes(quote.author?.toLowerCase())
+                );
+                setDisplayQuotes(defaultQuotes);
+                setFilteredQuotes(defaultQuotes);
+              }}
+              className={`px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${!selectedAuthor
                 ? "bg-[#355485] text-white shadow-md"
                 : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
-              }`}
-          >
-            Semua
-          </button>
-          {authors.map((author) => (
-            <button
-              key={author}
-              onClick={() => filterByAuthor(author)}
-              className={`px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${selectedAuthor === author
-                  ? "bg-[#355485] text-white shadow-md"
-                  : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
                 }`}
             >
-              @{author}
+              Semua
             </button>
-          ))}
+            {authors.map((author) => (
+              <button
+                key={author}
+                onClick={() => filterByAuthor(author)}
+                className={`px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${selectedAuthor === author
+                  ? "bg-[#355485] text-white shadow-md"
+                  : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
+                  }`}
+              >
+                @{author}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Info Count */}
       <div className="max-w-lg mx-auto px-5 mb-3">
@@ -416,7 +459,7 @@ export default function QuotesKu() {
                             <i className="ri-share-forward-line text-lg text-gray-500 group-hover:text-[#355485] transition-all"></i>
                           )}
                           <span className="text-xs text-gray-600">Bagikan</span>
-                        </button> 
+                        </button>
                       </div>
 
                       {/* Copy Button with Notification */}
@@ -427,7 +470,7 @@ export default function QuotesKu() {
                         >
                           <i className="ri-file-copy-line text-lg text-gray-500 group-hover:text-[#355485] transition-all"></i>
                         </button>
-                        
+
                         {/* Copy Notification Popup */}
                         {showCopyNotification && (
                           <div className="absolute bottom-full right-0 mb-2 px-2 py-1 bg-green-500 text-white text-xs rounded-lg shadow-lg whitespace-nowrap animate-bounce">
@@ -443,13 +486,14 @@ export default function QuotesKu() {
             ) : (
               <div className="text-center py-12 bg-white rounded-xl border border-[#e5e7eb]">
                 <i className="ri-inbox-line text-5xl text-[#cbdde9] mb-3"></i>
-                <p className="text-[#6b7280] text-sm">Tidak ada quote yang ditemukan</p>
+                <p className="text-[#6b7280] text-sm">
+                  {searchTerm
+                    ? `Tidak ada quote yang mengandung kata "${searchTerm}"`
+                    : "Tidak ada quote yang ditemukan"}
+                </p>
                 {(searchTerm || selectedAuthor) && (
                   <button
-                    onClick={() => {
-                      setSearchTerm("");
-                      setSelectedAuthor(null);
-                    }}
+                    onClick={clearSearch}
                     className="mt-3 text-[#4f90c6] text-xs"
                   >
                     Reset filter
