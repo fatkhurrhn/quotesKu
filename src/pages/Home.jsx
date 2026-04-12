@@ -372,7 +372,7 @@ export default function Home() {
               </button>
             </div>
             <p className="text-[10px] text-[#6b7280] mt-2">
-              Ada saran atau masukan? Klik tombol di atas untuk langsung DM ke Instagram developer
+              Ada saran atau masukan? Klik tombol di atass untuk langsung DM ke Instagram developer
             </p>
           </div>
         </div>
