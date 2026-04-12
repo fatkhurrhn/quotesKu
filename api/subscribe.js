@@ -30,7 +30,7 @@ export default async function handler(req, res) {
 
     // Kirim email
     const { data, error } = await resend.emails.send({
-      from: 'quotesKu <onboarding@resend.dev>',
+      from: 'quotesKu <notifikasi@fadev.my.id>',
       to: email,
       subject: 'Selamat Datang di quotesKu! ✨',
       html: `
