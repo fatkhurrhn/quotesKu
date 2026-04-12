@@ -190,7 +190,7 @@ export default function Home() {
 
           {/* Popular Tags */}
           <div className="flex flex-wrap justify-center gap-2 mt-6">
-            {["inspirasi", "cinta", "sukses", "motivasi", "kuliah"].map((tag) => (
+            {["pacaran", "cinta", "sukses", "kuliah"].map((tag) => (
               <button
                 key={tag}
                 onClick={() => setSearchQuery(tag)}
@@ -297,48 +297,7 @@ export default function Home() {
       {/* Penulis Section, Tentang Aplikasi, Footer - keep as is */}
       
       {/* Penulis Section */}
-      <div className="max-w-lg mx-auto px-5 mb-10">
-        <div className="text-center mb-6">
-          <h2 className="font-bold text-gray-800 text-xl">👥 Para Penulis</h2>
-          <p className="text-[#6b7280] text-xs mt-1">Kata-kata bijak dari mereka</p>
-        </div>
-
-        <div className="space-y-3">
-          <Link to="/storythur">
-            <div className="group bg-white rounded-xl p-4 shadow-sm border border-[#e5e7eb] flex items-center justify-between hover:shadow-md hover:border-[#cbdde9] transition-all">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-[#355485] to-[#4f90c6] rounded-xl flex items-center justify-center text-2xl shadow-md group-hover:scale-105 transition">
-                  📖
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-800 text-sm">Storythur</h3>
-                  <p className="text-[#6b7280] text-[10px]">Quotes umum & inspiratif</p>
-                </div>
-              </div>
-              <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center group-hover:bg-[#cbdde9] transition">
-                <i className="ri-arrow-right-s-line text-[#355485] text-lg"></i>
-              </div>
-            </div>
-          </Link>
-
-          <Link to="/fatkhurrhn">
-            <div className="group bg-white rounded-xl p-4 shadow-sm border border-[#e5e7eb] flex items-center justify-between hover:shadow-md hover:border-[#cbdde9] transition-all">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-[#2a436c] to-[#355485] rounded-xl flex items-center justify-center text-2xl shadow-md group-hover:scale-105 transition">
-                  🎓
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-800 text-sm">Fatkhurrhn</h3>
-                  <p className="text-[#6b7280] text-[10px]">Quotes perkuliahan</p>
-                </div>
-              </div>
-              <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center group-hover:bg-[#cbdde9] transition">
-                <i className="ri-arrow-right-s-line text-[#355485] text-lg"></i>
-              </div>
-            </div>
-          </Link>
-        </div>
-      </div>
+      
 
       {/* Tentang Aplikasi & Developer */}
       <div className="max-w-lg mx-auto px-5 mb-10">
@@ -379,21 +338,7 @@ export default function Home() {
       </div>
 
       {/* Footer */}
-      <footer className="border-t border-[#e5e7eb] py-6 bg-white">
-        <div className="max-w-lg mx-auto px-5 text-center">
-          <div className="flex justify-center gap-4 mb-3">
-            <a href="https://www.instagram.com/fatkhurrhn" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#355485] transition">
-              <i className="ri-instagram-line text-lg"></i>
-            </a>
-            <a href="https://github.com/fatkhurrhn" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#355485] transition">
-              <i className="ri-github-line text-lg"></i>
-            </a>
-          </div>
-          <p className="text-[#9ca3af] text-[10px]">
-            © 2024 quotesKu • Made with <i className="ri-heart-fill text-red-400 text-[8px]"></i> by Fatkhurrhn & Storythur
-          </p>
-        </div>
-      </footer>
+      
     </div>
   );
 }
