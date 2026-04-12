@@ -1,9 +1,19 @@
 import { Resend } from 'resend';
+import admin from 'firebase-admin';
+
+// Inisialisasi Firebase Admin
+if (!admin.apps.length) {
+  const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+  });
+}
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+const db = admin.firestore();
 
 export default async function handler(req, res) {
-  // Set CORS headers
+  // CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -28,7 +38,22 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Kirim email konfirmasi subscribe
+    // Cek apakah email sudah terdaftar
+    const subscribersRef = db.collection('subscribers');
+    const existing = await subscribersRef.where('email', '==', email).get();
+    
+    if (!existing.empty) {
+      return res.status(400).json({ error: 'Email sudah terdaftar!' });
+    }
+
+    // Simpan subscriber ke Firestore
+    await subscribersRef.add({
+      email: email,
+      subscribedAt: new Date(),
+      verified: true,
+    });
+
+    // Kirim email konfirmasi
     await resend.emails.send({
       from: 'quotesKu <onboarding@resend.dev>',
       to: email,
@@ -70,6 +95,6 @@ export default async function handler(req, res) {
     });
   } catch (error) {
     console.error('Error:', error);
-    return res.status(500).json({ error: 'Gagal mengirim email' });
+    return res.status(500).json({ error: 'Gagal mendaftarkan email' });
   }
 }

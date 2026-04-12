@@ -1,7 +1,7 @@
 import { Resend } from 'resend';
 import admin from 'firebase-admin';
 
-// Inisialisasi Firebase Admin (gunakan service account)
+// Inisialisasi Firebase Admin
 if (!admin.apps.length) {
   const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
   admin.initializeApp({
@@ -20,18 +20,20 @@ export default async function handler(req, res) {
   const { quoteId, author, text } = req.body;
 
   try {
-    // Ambil semua subscriber
+    // Ambil semua subscriber dari Firestore
     const subscribersSnapshot = await db.collection('subscribers').get();
     const subscribers = subscribersSnapshot.docs.map(doc => doc.data().email);
+
+    console.log(`Mengirim notifikasi ke ${subscribers.length} subscriber`);
 
     if (subscribers.length === 0) {
       return res.status(200).json({ message: 'Tidak ada subscriber' });
     }
 
-    // Kirim email ke semua subscriber (batch)
+    // Kirim email ke semua subscriber
     const emailPromises = subscribers.map(email => 
       resend.emails.send({
-        from: 'quotesKu <notifikasi@resend.dev>',
+        from: 'quotesKu <onboarding@resend.dev>',
         to: email,
         subject: `✨ Quote baru dari ${author} di quotesKu!`,
         html: `
@@ -75,6 +77,6 @@ export default async function handler(req, res) {
     });
   } catch (error) {
     console.error('Error:', error);
-    return res.status(500).json({ error: 'Gagal mengirim notifikasi' });
+    return res.status(500).json({ error: 'Gagal mengirim notifikasi', detail: error.message });
   }
 }
