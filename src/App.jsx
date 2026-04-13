@@ -12,6 +12,7 @@ import GenerateQuotes from './pages/GenerateQuotes';
 import BahanReels from './pages/BahanReels';
 import InstagramKu from './pages/InstagramKu';
 import QuotesKu from './pages/QuotesKu';
+import Testing from './pages/Testing';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
       <AutoToTop />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/tes" element={<Testing />} />
         <Route path="/add" element={<AddQuotes />} />
         <Route path="/manage" element={<ManageQuotes2 />} />
         <Route path="/quotesku" element={<QuotesKu />} />

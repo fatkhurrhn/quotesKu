@@ -4,7 +4,7 @@ import BottomNav from "../components/BottomNav";
 import { myQuotesCollection } from "../firebase";
 import { getDocs, query, where } from "firebase/firestore";
 
-export default function Home() {
+export default function Testing() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [totalQuotes, setTotalQuotes] = useState(0);
