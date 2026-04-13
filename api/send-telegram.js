@@ -6,21 +6,32 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { type, author, quoteText, quoteId } = req.body;
+  const { type, author, quoteText } = req.body;
+
+  // Validasi input
+  if (!type || !author || !quoteText) {
+    console.error('Missing required fields:', { type, author, quoteText });
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
 
   try {
     const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
     const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
-    if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
-      console.error('Missing Telegram credentials');
-      return res.status(500).json({ error: 'Telegram not configured' });
+    // Validasi environment variables
+    if (!TELEGRAM_BOT_TOKEN) {
+      console.error('TELEGRAM_BOT_TOKEN is not configured');
+      return res.status(500).json({ error: 'Telegram bot token missing' });
+    }
+
+    if (!TELEGRAM_CHAT_ID) {
+      console.error('TELEGRAM_CHAT_ID is not configured');
+      return res.status(500).json({ error: 'Telegram chat ID missing' });
     }
 
     let text = '';
 
     if (type === 'new_quote') {
-      // Notifikasi quote baru (pending)
       text = `
 📢 *QUOTE BARU!* 📢
 
@@ -32,7 +43,6 @@ export default async function handler(req, res) {
 🔗 *Link:* https://quoteskuu.vercel.app/manage
       `.trim();
     } else if (type === 'approved') {
-      // Notifikasi quote approved
       text = `
 ✅ *QUOTE TELAH DIAPPROVE!* ✅
 
@@ -43,7 +53,11 @@ export default async function handler(req, res) {
 
 🔗 *Link:* https://quoteskuu.vercel.app/quotes
       `.trim();
+    } else {
+      return res.status(400).json({ error: 'Invalid notification type' });
     }
+
+    console.log('Sending Telegram notification:', { type, author, chatId: TELEGRAM_CHAT_ID });
 
     const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
       method: 'POST',
@@ -61,12 +75,13 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       console.error('Telegram API error:', data);
-      return res.status(500).json({ error: 'Failed to send Telegram message' });
+      return res.status(500).json({ error: 'Telegram API error', details: data });
     }
 
+    console.log('Telegram notification sent successfully');
     return res.status(200).json({ success: true, data });
   } catch (error) {
-    console.error('Error:', error.message);
+    console.error('Error in send-telegram:', error.message);
     return res.status(500).json({ error: error.message });
   }
 }
