@@ -81,6 +81,26 @@ const ManageQuotes = () => {
     fetchQuotes();
   }, [statusFilter]);
 
+  // Send Telegram notification for approved quote
+  const sendTelegramApproveNotification = async (author, quoteText) => {
+    try {
+      await fetch('/api/send-telegram', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: 'approved',
+          author: author,
+          quoteText: quoteText,
+        }),
+      });
+      console.log('Telegram approve notification sent');
+    } catch (error) {
+      console.error('Failed to send Telegram notification:', error);
+    }
+  };
+
   const filteredQuotes = quotes.filter(quote => {
     const matchesSearch = searchTerm === '' ||
       quote.text?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -117,6 +137,7 @@ const ManageQuotes = () => {
   };
 
   // Handle status change with notification
+  // Handle status change with notification
   const handleStatusChange = async (quoteId, newStatus, quoteData) => {
     try {
       const quoteRef = doc(myQuotesCollection, quoteId);
@@ -128,8 +149,12 @@ const ManageQuotes = () => {
 
       showNotificationMessage(`Status berhasil diubah menjadi ${newStatus}!`, 'success');
 
-      // Kirim notifikasi jika status berubah menjadi "approved"
+      // Kirim notifikasi TELEGRAM jika status berubah menjadi "approved"
       if (newStatus === 'approved' && quoteData) {
+        // Kirim ke Telegram
+        await sendTelegramApproveNotification(quoteData.author, quoteData.text);
+
+        // Kirim ke email subscriber
         setIsSendingNotification(true);
         await sendNotificationToSubscribers(quoteData);
         setIsSendingNotification(false);
@@ -214,7 +239,10 @@ const ManageQuotes = () => {
       setIsAddPopupOpen(false);
       showNotificationMessage('Quote berhasil ditambahkan!', 'success');
 
-      // Kirim notifikasi untuk quote baru yang langsung approved
+      // Kirim notifikasi TELEGRAM untuk quote yang langsung approved
+      await sendTelegramApproveNotification(newQuote.author, newQuote.text);
+
+      // Kirim notifikasi email ke subscriber
       setIsSendingNotification(true);
       await sendNotificationToSubscribers(newQuoteData);
       setIsSendingNotification(false);
@@ -328,16 +356,21 @@ const ManageQuotes = () => {
       }
     }
 
+    // Di dalam handleImportSubmit, setelah addedQuotes.length > 0
     if (addedQuotes.length > 0) {
       setQuotes(prev => [...addedQuotes, ...prev]);
 
-      // Kirim notifikasi untuk quote pertama yang diimport (atau bisa semua)
+      // Kirim notifikasi TELEGRAM untuk quote pertama yang diimport
       if (addedQuotes.length > 0) {
+        const firstQuote = addedQuotes[0];
+        await sendTelegramApproveNotification(firstQuote.author, firstQuote.text);
+
         setIsSendingNotification(true);
-        await sendNotificationToSubscribers(addedQuotes[0]);
+        await sendNotificationToSubscribers(firstQuote);
         setIsSendingNotification(false);
       }
     }
+    
 
     const importHistory = {
       id: Date.now(),

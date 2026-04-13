@@ -6,7 +6,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { message, author, quoteText } = req.body;
+  const { type, author, quoteText, quoteId } = req.body;
 
   try {
     const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -17,17 +17,33 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Telegram not configured' });
     }
 
-    // Format pesan
-    const text = `
+    let text = '';
+
+    if (type === 'new_quote') {
+      // Notifikasi quote baru (pending)
+      text = `
 📢 *QUOTE BARU!* 📢
 
 *👤 Author:* ${author}
-*📝 Quote:* "${quoteText || message}"
+*📝 Quote:* "${quoteText}"
 
 🔄 *Status:* Pending (menunggu approve)
 
-🔗 *Link:* https://quoteskuu.vercel.app/manage-quotes
-    `.trim();
+🔗 *Link:* https://quoteskuu.vercel.app/manage
+      `.trim();
+    } else if (type === 'approved') {
+      // Notifikasi quote approved
+      text = `
+✅ *QUOTE TELAH DIAPPROVE!* ✅
+
+*👤 Author:* ${author}
+*📝 Quote:* "${quoteText}"
+
+📢 *Status:* Approved (telah tampil di website)
+
+🔗 *Link:* https://quoteskuu.vercel.app/quotes
+      `.trim();
+    }
 
     const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
       method: 'POST',
