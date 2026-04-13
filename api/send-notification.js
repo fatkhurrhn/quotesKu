@@ -8,6 +8,7 @@ export default async function handler(req, res) {
   // Daftar subscriber (nanti ambil dari Firestore)
   const subscribers = [
     'fatkhurmeranti27@gmail.com',
+    // tambah email lain di sini
   ];
 
   try {
@@ -22,29 +23,40 @@ export default async function handler(req, res) {
         },
         body: JSON.stringify({
           from: 'ig.storythur@gmail.com',
-          to: [email], // 🔥 Perbaikan: pakai array
-          subject: `✨ Quote baru dari ${author} di quotesKu!`,
+          to: [email],
+          subject: `✨ Quote baru dari ${author} di quotesKu! ✨`,
           html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #1e3a5f 0%, #355485 100%); border-radius: 20px;">
-              <div style="text-align: center; padding: 20px;">
-                <h1 style="color: white; margin: 0;">📖 quotesKu</h1>
-                <p style="color: #cbdde9;">Quote baru telah hadir!</p>
+            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+              <!-- Header -->
+              <div style="background: linear-gradient(135deg, #1e3a5f 0%, #355485 100%); padding: 24px; text-align: center;">
+                <h1 style="color: #ffffff; margin: 0; font-size: 28px;">📖 quotesKu</h1>
+                <p style="color: #cbdde9; margin: 8px 0 0; font-size: 13px;">Quote baru telah hadir!</p>
               </div>
-              <div style="background: white; border-radius: 15px; padding: 30px; margin-top: 20px;">
-                <div style="text-align: center;">
-                  <div style="background: #f0f4f8; border-radius: 15px; padding: 20px; margin-bottom: 20px;">
-                    <p style="color: #1e3a5f; font-size: 18px; font-style: italic; margin: 0;">
-                      "${text}"
-                    </p>
-                    <p style="color: #4a5568; margin-top: 15px; margin-bottom: 0;">
-                      — <strong>${author}</strong>
-                    </p>
-                  </div>
-                  <a href="https://quoteskuu.vercel.app/quotes" 
-                     style="display: inline-block; background: linear-gradient(135deg, #1e3a5f, #355485); color: white; padding: 12px 30px; border-radius: 10px; text-decoration: none; margin-top: 10px;">
+              
+              <!-- Content -->
+              <div style="padding: 32px 24px; background: #ffffff;">
+                <!-- Quote Card -->
+                <div style="background: #f8fafc; border-radius: 12px; padding: 24px; margin-bottom: 24px; border-left: 4px solid #355485;">
+                  <p style="color: #1e293b; font-size: 18px; font-style: italic; line-height: 1.6; margin: 0 0 16px;">
+                    "${text}"
+                  </p>
+                  <p style="color: #475569; margin: 0; font-size: 14px;">
+                    — <strong style="color: #355485;">${author}</strong>
+                  </p>
+                </div>
+                
+                <!-- Button -->
+                <div style="text-align: center; margin: 24px 0;">
+                  <a href="https://quoteskuu.vercel.app/quotes" style="display: inline-block; background: linear-gradient(135deg, #1e3a5f, #355485); color: #ffffff; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-weight: 600;">
                     Lihat Quote Lainnya →
                   </a>
                 </div>
+                
+                <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 24px 0;">
+                <p style="color: #6b7280; font-size: 12px; text-align: center; margin: 0;">
+                  Kamu menerima email ini karena berlangganan notifikasi quotesKu.<br>
+                  <a href="https://quoteskuu.vercel.app" style="color: #4f90c6; text-decoration: none;">Kunjungi website</a>
+                </p>
               </div>
             </div>
           `,
