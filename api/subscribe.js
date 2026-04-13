@@ -27,37 +27,46 @@ export default async function handler(req, res) {
         'Authorization': `Bearer ${KEPLARS_API_KEY}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        from: 'ig.storythur@gmail.com',
-        to: [email], // 🔥 Perbaikan: pakai array
-        subject: 'Selamat Datang di quotesKu! ✨',
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #1e3a5f 0%, #355485 100%); border-radius: 20px;">
-            <div style="text-align: center; padding: 20px;">
-              <h1 style="color: white; margin: 0;">✨ quotesKu ✨</h1>
-              <p style="color: #cbdde9;">Temukan inspirasi dalam setiap kata</p>
-            </div>
-            <div style="background: white; border-radius: 15px; padding: 30px; margin-top: 20px;">
-              <h2 style="color: #1e3a5f; margin-top: 0;">Halo! 👋</h2>
-              <p style="color: #4a5568; line-height: 1.6;">
-                Terima kasih telah berlangganan notifikasi quotesKu!
-              </p>
-              <p style="color: #4a5568; line-height: 1.6;">
-                Kamu akan mendapatkan notifikasi setiap kali ada quote baru.
-              </p>
-              <div style="background: #f0f4f8; border-radius: 10px; padding: 15px; margin: 20px 0;">
-                <p style="color: #1e3a5f; margin: 0; font-size: 14px;">
-                  📧 <strong>${email}</strong>
-                </p>
-              </div>
-              <p style="color: #4a5568; font-size: 14px; margin-top: 20px;">
-                Salam inspirasi,<br>
-                <strong>Tim quotesKu</strong>
-              </p>
-            </div>
-          </div>
-        `,
-      }),
+      // Bagian body JSON-nya jadi seperti ini:
+body: JSON.stringify({
+  from: 'ig.storythur@gmail.com',
+  to: [email],
+  subject: 'Selamat Datang di quotesKu! ✨',
+  html: `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+    </head>
+    <body style="font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="background: linear-gradient(135deg, #1e3a5f 0%, #355485 100%); padding: 20px;">
+        <tr>
+          <td align="center">
+            <table width="500" cellpadding="0" cellspacing="0" style="background: white; border-radius: 20px; padding: 30px;">
+              <tr>
+                <td align="center">
+                  <h1 style="color: #1e3a5f;">✨ quotesKu ✨</h1>
+                  <p style="color: #4a5568;">Temukan inspirasi dalam setiap kata</p>
+                  <div style="background: #f0f4f8; border-radius: 10px; padding: 20px; margin: 20px 0;">
+                    <h2 style="color: #1e3a5f; margin-top: 0;">Halo! 👋</h2>
+                    <p style="color: #4a5568;">Terima kasih telah berlangganan notifikasi quotesKu!</p>
+                    <p style="color: #4a5568;">Kamu akan mendapatkan notifikasi setiap kali ada quote baru.</p>
+                    <p style="background: white; padding: 10px; border-radius: 5px;">
+                      📧 <strong>${email}</strong>
+                    </p>
+                  </div>
+                  <p style="color: #4a5568;">Salam inspirasi,<br><strong>Tim quotesKu</strong></p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+    </html>
+  `,
+  text: `Halo! Terima kasih telah berlangganan notifikasi quotesKu! Kamu akan mendapatkan notifikasi setiap kali ada quote baru. Salam inspirasi, Tim quotesKu`,
+}),
     });
 
     const data = await response.json();
