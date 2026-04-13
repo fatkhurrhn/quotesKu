@@ -1,8 +1,3 @@
-import { Resend } from 'resend';
-
-// Kita tetep pake Resend untuk testing, tapi nanti kita ganti ke Keplars
-// Untuk sekarang, kita bypass dulu
-
 export default async function handler(req, res) {
   // CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -11,8 +6,7 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
 
   if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
+    return res.status(200).end();
   }
 
   if (req.method !== 'POST') {
@@ -26,17 +20,16 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Kirim email pake Keplars
     const KEPLARS_API_KEY = process.env.KEPLARS_API_KEY;
     
-    const response = await fetch('https://api.keplars.com/v1/send', {
+    const response = await fetch('https://api.keplars.com/api/v1/send-email/high', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${KEPLARS_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'quotesKu <ig.storythur@gmail.com>',
+        from: 'ig.storythur@gmail.com',
         to: email,
         subject: 'Selamat Datang di quotesKu! ✨',
         html: `
@@ -51,7 +44,7 @@ export default async function handler(req, res) {
                 Terima kasih telah berlangganan notifikasi quotesKu!
               </p>
               <p style="color: #4a5568; line-height: 1.6;">
-                Kamu akan mendapatkan notifikasi setiap kali ada quote baru dari penulis favoritmu.
+                Kamu akan mendapatkan notifikasi setiap kali ada quote baru.
               </p>
               <div style="background: #f0f4f8; border-radius: 10px; padding: 15px; margin: 20px 0;">
                 <p style="color: #1e3a5f; margin: 0; font-size: 14px;">
@@ -62,9 +55,6 @@ export default async function handler(req, res) {
                 Salam inspirasi,<br>
                 <strong>Tim quotesKu</strong>
               </p>
-            </div>
-            <div style="text-align: center; padding: 20px; color: #cbdde9; font-size: 12px;">
-              <p>© 2024 quotesKu • Temukan inspirasi setiap hari</p>
             </div>
           </div>
         `,
@@ -78,10 +68,10 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: data.message || 'Gagal mengirim email' });
     }
 
-    console.log('Email terkirim:', data);
+    console.log('Subscribe email terkirim:', data);
     return res.status(200).json({ 
       success: true, 
-      message: 'Subscribe berhasil! Cek email kamu untuk konfirmasi.' 
+      message: 'Subscribe berhasil! Cek email kamu.' 
     });
   } catch (error) {
     console.error('Error:', error.message);

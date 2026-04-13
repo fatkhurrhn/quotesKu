@@ -1,31 +1,22 @@
 export default async function handler(req, res) {
-  // CORS headers
-  res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
-
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
 
   try {
     const KEPLARS_API_KEY = process.env.KEPLARS_API_KEY;
-    
-    console.log('API Key exists:', !!KEPLARS_API_KEY);
     
     if (!KEPLARS_API_KEY) {
       return res.status(500).json({ error: 'KEPLARS_API_KEY not configured' });
     }
 
-    const response = await fetch('https://api.keplars.com/v1/send', {
+    // ENDPOINT YANG BENAR (pakai high priority untuk notifikasi)
+    const response = await fetch('https://api.keplars.com/api/v1/send-email/high', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${KEPLARS_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'quotesKu <ig.storythur@gmail.com>',
+        from: 'ig.storythur@gmail.com',
         to: 'fatkhurmeranti27@gmail.com', // Ganti dengan email kamu
         subject: 'Test Email from Keplars',
         html: '<p>Test email dari quotesKu menggunakan Keplars!</p>',

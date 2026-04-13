@@ -3,32 +3,25 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { quoteId, author, text } = req.body;
+  const { author, text } = req.body;
+
+  // Daftar subscriber (nanti ambil dari Firestore)
+  const subscribers = [
+    'fatkhurmeranti27@gmail.com', // Ganti dengan email subscriber
+  ];
 
   try {
     const KEPLARS_API_KEY = process.env.KEPLARS_API_KEY;
     
-    // Daftar subscriber (nanti bisa diambil dari Firestore)
-    // Untuk sekarang, pake hardcoded dulu buat testing
-    const subscribers = [
-      'fatkhurmeranti27@gmail.com', // Ganti dengan email kamu
-      // Tambah email lain di sini
-    ];
-
-    if (subscribers.length === 0) {
-      return res.status(200).json({ message: 'Tidak ada subscriber' });
-    }
-
-    // Kirim email ke semua subscriber
     const emailPromises = subscribers.map(async (email) => {
-      const response = await fetch('https://api.keplars.com/v1/send', {
+      const response = await fetch('https://api.keplars.com/api/v1/send-email/high', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${KEPLARS_API_KEY}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          from: 'quotesKu <ig.storythur@gmail.com>',
+          from: 'ig.storythur@gmail.com',
           to: email,
           subject: `✨ Quote baru dari ${author} di quotesKu!`,
           html: `
@@ -51,11 +44,6 @@ export default async function handler(req, res) {
                      style="display: inline-block; background: linear-gradient(135deg, #1e3a5f, #355485); color: white; padding: 12px 30px; border-radius: 10px; text-decoration: none; margin-top: 10px;">
                     Lihat Quote Lainnya →
                   </a>
-                </div>
-                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
-                  <p style="color: #6b7280; font-size: 12px; text-align: center;">
-                    Kamu menerima email ini karena berlangganan notifikasi quotesKu.
-                  </p>
                 </div>
               </div>
             </div>
