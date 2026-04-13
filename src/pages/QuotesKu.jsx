@@ -50,7 +50,7 @@ const getRelativeTime = (timestamp) => {
 };
 
 // Author yang di-hide dari tampilan default
-const HIDDEN_AUTHORS = ["storythur", "fatkhurrhn", "nrltfh_22", "motivasiQuran"];
+const HIDDEN_AUTHORS = ["storythur", "fatkhurrhn", "nrltfh_22", "motivasi_quran"];
 
 /* ---------- Main Component ---------- */
 export default function QuotesKu() {
