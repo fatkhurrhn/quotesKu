@@ -8,7 +8,7 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'KEPLARS_API_KEY not configured' });
     }
 
-    // ENDPOINT YANG BENAR (pakai high priority untuk notifikasi)
+    // Perbaikan: 'to' harus berupa array, bukan string
     const response = await fetch('https://api.keplars.com/api/v1/send-email/high', {
       method: 'POST',
       headers: {
@@ -17,7 +17,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         from: 'ig.storythur@gmail.com',
-        to: 'fatkhurmeranti27@gmail.com', // Ganti dengan email kamu
+        to: ['fatkhurmeranti27@gmail.com'], // 🔥 Perbaikan: pakai array
         subject: 'Test Email from Keplars',
         html: '<p>Test email dari quotesKu menggunakan Keplars!</p>',
       }),

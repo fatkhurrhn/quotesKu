@@ -1,5 +1,4 @@
 export default async function handler(req, res) {
-  // CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -30,7 +29,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         from: 'ig.storythur@gmail.com',
-        to: email,
+        to: [email], // 🔥 Perbaikan: pakai array
         subject: 'Selamat Datang di quotesKu! ✨',
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #1e3a5f 0%, #355485 100%); border-radius: 20px;">
@@ -65,7 +64,7 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       console.error('Keplars error:', data);
-      return res.status(500).json({ error: data.message || 'Gagal mengirim email' });
+      return res.status(500).json({ error: data.error?.message || 'Gagal mengirim email' });
     }
 
     console.log('Subscribe email terkirim:', data);

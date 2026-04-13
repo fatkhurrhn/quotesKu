@@ -7,7 +7,7 @@ export default async function handler(req, res) {
 
   // Daftar subscriber (nanti ambil dari Firestore)
   const subscribers = [
-    'fatkhurmeranti27@gmail.com', // Ganti dengan email subscriber
+    'fatkhurmeranti27@gmail.com',
   ];
 
   try {
@@ -22,7 +22,7 @@ export default async function handler(req, res) {
         },
         body: JSON.stringify({
           from: 'ig.storythur@gmail.com',
-          to: email,
+          to: [email], // 🔥 Perbaikan: pakai array
           subject: `✨ Quote baru dari ${author} di quotesKu!`,
           html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #1e3a5f 0%, #355485 100%); border-radius: 20px;">
