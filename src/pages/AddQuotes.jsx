@@ -96,6 +96,25 @@ const AddQuotes = () => {
 
             await addDoc(myQuotesCollection, newQuote);
 
+            // ✅ KIRIM NOTIFIKASI TELEGRAM (dalam try block)
+            try {
+                await fetch('/api/send-telegram', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        type: 'new_quote',     // ← WAJIB tambahin ini!
+                        author: author,
+                        quoteText: quote,
+                    }),
+                });
+                console.log('Telegram notification sent');
+            } catch (teleError) {
+                console.error('Failed to send Telegram notification:', teleError);
+                // Notifikasi gagal, tapi quote tetap tersimpan
+            }
+
             // Save author to history
             saveAuthorToHistory(author);
 
@@ -119,28 +138,6 @@ const AddQuotes = () => {
             showPopupNotification("Terjadi kesalahan saat menambahkan quote", true);
         } finally {
             setIsLoading(false);
-        }
-
-        // Setelah await addDoc(myQuotesCollection, newQuote);
-        // Tambahkan ini:
-
-        // Kirim notifikasi ke Telegram
-        try {
-            await fetch('/api/send-telegram', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    author: author,
-                    quoteText: quote,
-                    message: `Ada quote baru dari ${author}`,
-                }),
-            });
-            console.log('Telegram notification sent');
-        } catch (teleError) {
-            console.error('Failed to send Telegram notification:', teleError);
-            // Notifikasi Telegram gagal, tapi quote tetap tersimpan
         }
     };
 
