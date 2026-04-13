@@ -51,7 +51,7 @@ export default async function handler(req, res) {
 
 📢 *Status:* Approved (telah tampil di website)
 
-🔗 *Link:* https://quoteskuu.vercel.app/quotes
+🔗 *Link:* https://quoteskuu.vercel.app/quotesku
       `.trim();
     } else {
       return res.status(400).json({ error: 'Invalid notification type' });
