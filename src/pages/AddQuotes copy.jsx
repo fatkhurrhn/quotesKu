@@ -120,28 +120,6 @@ const AddQuotes = () => {
         } finally {
             setIsLoading(false);
         }
-
-        // Setelah await addDoc(myQuotesCollection, newQuote);
-        // Tambahkan ini:
-
-        // Kirim notifikasi ke Telegram
-        try {
-            await fetch('/api/send-telegram', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    author: author,
-                    quoteText: quote,
-                    message: `Ada quote baru dari ${author}`,
-                }),
-            });
-            console.log('Telegram notification sent');
-        } catch (teleError) {
-            console.error('Failed to send Telegram notification:', teleError);
-            // Notifikasi Telegram gagal, tapi quote tetap tersimpan
-        }
     };
 
     // Load history item ke form
